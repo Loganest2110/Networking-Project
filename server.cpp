@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <string>
-#include "matchmaker.hpp"
+#include "matchmaker.h"
 
 using boost::asio::ip::tcp;
 

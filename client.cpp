@@ -11,7 +11,7 @@ int randomElo() {
     return random;
 }
 
-void client() {
+int main() {
     srand(time(0));
 
     // Variables for later

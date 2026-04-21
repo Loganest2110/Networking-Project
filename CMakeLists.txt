@@ -15,10 +15,17 @@ CPMAddPackage(
         "BUILD_SHARED_LIBS OFF" "BOOST_INCLUDE_LIBRARIES container\\\;asio\\\;endian"
 )
 
-add_executable(NetworkingProject main.cpp server.cpp client.cpp
-        matchmaker.h)
-target_compile_features(NetworkingProject PRIVATE cxx_std_23)
-target_link_libraries(NetworkingProject PRIVATE Boost::endian Boost::asio)
+add_executable(Server server.cpp matchmaker.h)
+target_compile_features(Server PRIVATE cxx_std_23)
+target_link_libraries(Server PRIVATE Boost::endian Boost::asio)
 if(WIN32)
-    target_link_libraries(NetworkingProject PRIVATE ws2_32)
+    target_link_libraries(Server PRIVATE ws2_32 mswsock)
+endif()
+
+
+add_executable(Client client.cpp)
+target_compile_features(Client PRIVATE cxx_std_23)
+target_link_libraries(Client PRIVATE Boost::endian Boost::asio)
+if(WIN32)
+    target_link_libraries(Client PRIVATE ws2_32 mswsock)
 endif()
