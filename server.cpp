@@ -10,6 +10,7 @@ private:
     tcp::acceptor acceptor;
     Matchmaker matchmaker;
 
+    // Check for clients to connect to the server
     void acceptClients() {
         acceptor.async_accept([this](boost::system::error_code error, tcp::socket socket) {
             if (!error) {
@@ -18,6 +19,7 @@ private:
                 char data[1024];
                 size_t length = socket.read_some(boost::asio::buffer(data));
 
+                // Receive elo to send to match maker
                 int playerElo = std::stoi(std::string(data, length));
                 matchmaker.addPlayer(std::move(socket), playerElo);
             }
@@ -26,6 +28,7 @@ private:
     }
 
 public:
+    // Server setup
     Server(boost::asio::io_context& io_context, short port) : acceptor(io_context, tcp::endpoint(tcp::v4(), port)),
     matchmaker(io_context) {
         std::cout << "Server started and can except clients." << std::endl;
