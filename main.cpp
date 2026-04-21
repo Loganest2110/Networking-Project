@@ -1,3 +1,6 @@
+// Used for testing, currently has no use
+
+/*
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -5,7 +8,6 @@
 void server();
 void client();
 
-// Temporary code for testing purposes
 int main() {
     std::cout << "Starting server." << std::endl;
 
@@ -25,3 +27,4 @@ int main() {
 
     return 0;
 }
+*/

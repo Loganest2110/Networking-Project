@@ -5,28 +5,33 @@
 
 using boost::asio::ip::tcp;
 
+// Function for generating random elo between 100 and 2000
 int randomElo() {
-    srand(time(0));
-    int random = (rand() % 2001) + 100;
+    int random = (rand() % 1901) + 100;
     return random;
 }
 
 void client() {
+    srand(time(0));
+
+    // Variables for later
     boost::asio::io_context io_context;
     tcp::socket socket(io_context);
     char message[1024];
 
+    // Elo generation
     int elo = randomElo();
     std::cout << "Your elo is: " << elo << std::endl;
+    std::string eloString = std::to_string(elo);
 
+    // Connecting to the server
     tcp::resolver resolver(io_context);
     auto endpoint = resolver.resolve("127.0.0.1", "5555");
-
     boost::asio::connect(socket, endpoint);
     std::cout << "Connected to server." << std::endl;
 
-    boost::asio::write(socket, boost::asio::buffer("Message to server."));
-
+    // Writing a message to server and receiving a response
+    boost::asio::write(socket, boost::asio::buffer(eloString));
     size_t length = socket.read_some(boost::asio::buffer(message));
-    std::cout << "Server reply: " << std::string(message, length) << std::endl;
+    std::cout << std::string(message, length) << std::endl;
 }

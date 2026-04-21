@@ -1,22 +1,40 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <string>
+#include "matchmaker.hpp"
 
 using boost::asio::ip::tcp;
 
-void server() {
+class Server {
+private:
+    tcp::acceptor acceptor;
+    Matchmaker matchmaker;
+
+    void acceptClients() {
+        acceptor.async_accept([this](boost::system::error_code error, tcp::socket socket) {
+            if (!error) {
+                std::cout << "Client connected to server" << std::endl;
+
+                char data[1024];
+                size_t length = socket.read_some(boost::asio::buffer(data));
+
+                int playerElo = std::stoi(std::string(data, length));
+                matchmaker.addPlayer(std::move(socket), playerElo);
+            }
+            acceptClients();
+        });
+    }
+
+public:
+    Server(boost::asio::io_context& io_context, short port) : acceptor(io_context, tcp::endpoint(tcp::v4(), port)),
+    matchmaker(io_context) {
+        std::cout << "Server started and can except clients." << std::endl;
+        acceptClients();
+    }
+};
+
+int main() {
     boost::asio::io_context io_context;
-    tcp::socket socket(io_context);
-    char message[1024];
-
-    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 5555));
-    std::cout << "Server successfully started." << std::endl;
-
-    acceptor.accept(socket);
-    std::cout << "Connected to client." << std::endl;
-
-    size_t length = socket.read_some(boost::asio::buffer(message));
-    std::cout << "Message: " << std::string(message, length) << std::endl;
-
-    boost::asio::write(socket, boost::asio::buffer("Server response."));
+    Server server(io_context, 5555);
+    io_context.run();
 }
